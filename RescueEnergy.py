@@ -1,3 +1,4 @@
+from flask import Flask, request, jsonify
 import cx_Oracle
 
 # Configuração de conexão com o Oracle
@@ -5,6 +6,9 @@ USERNAME = 'rm557509'
 PASSWORD = '280905'
 DSN = cx_Oracle.makedsn('oracle.fiap.com.br', 1521, service_name='orcl')
 
+app = Flask(__name__)
+
+# Conectar ao banco
 try:
     connection = cx_Oracle.connect(USERNAME, PASSWORD, DSN)
     print("Conexão bem-sucedida com o Oracle Database")
@@ -12,80 +16,62 @@ except cx_Oracle.Error as e:
     print("Erro ao conectar no Oracle Database", e)
     exit()
 
+@app.route('/clientes', methods=['POST'])
 def criar_cliente():
-    nome = input("Digite o nome do cliente: ")
-    endereco = input("Digite o endereço do cliente: ")
-    telefone = input("Digite o telefone do cliente: ")
+    data = request.json
+    nome = data.get('nome')
+    endereco = data.get('endereco')
+    telefone = data.get('telefone')
 
     try:
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO CLIENTES (ID, NOME, ENDERECO, TELEFONE) VALUES (SEQ_CLIENTES.NEXTVAL, :nome, :endereco, :telefone)",
-                       nome=nome, endereco=endereco, telefone=telefone)
+        cursor.execute(
+            "INSERT INTO CLIENTES (ID, NOME, ENDERECO, TELEFONE) VALUES (SEQ_CLIENTES.NEXTVAL, :nome, :endereco, :telefone)",
+            nome=nome, endereco=endereco, telefone=telefone
+        )
         connection.commit()
-        print("Cliente cadastrado com sucesso!")
+        return jsonify({"message": "Cliente cadastrado com sucesso!"}), 201
     except cx_Oracle.Error as e:
-        print("Erro ao cadastrar o cliente", e)
+        return jsonify({"error": str(e)}), 500
 
+@app.route('/clientes', methods=['GET'])
 def ler_clientes():
     try:
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM CLIENTES")
         clientes = cursor.fetchall()
-        for cliente in clientes:
-            print(cliente)
+        clientes_formatados = [{"id": c[0], "nome": c[1], "endereco": c[2], "telefone": c[3]} for c in clientes]
+        return jsonify(clientes_formatados), 200
     except cx_Oracle.Error as e:
-        print("Erro ao buscar os clientes", e)
+        return jsonify({"error": str(e)}), 500
 
-def atualizar_cliente():
-    cliente_id = int(input("Digite o ID do cliente que deseja atualizar: "))
-    novo_nome = input("Digite o novo nome do cliente: ")
-    novo_endereco = input("Digite o novo endereço do cliente: ")
-    novo_telefone = input("Digite o novo telefone do cliente: ")
+@app.route('/clientes/<int:id>', methods=['PUT'])
+def atualizar_cliente(id):
+    data = request.json
+    nome = data.get('nome')
+    endereco = data.get('endereco')
+    telefone = data.get('telefone')
 
     try:
         cursor = connection.cursor()
-        cursor.execute("UPDATE CLIENTES SET NOME = :nome, ENDERECO = :endereco, TELEFONE = :telefone WHERE ID = :id",
-                       nome=novo_nome, endereco=novo_endereco, telefone=novo_telefone, id=cliente_id)
+        cursor.execute(
+            "UPDATE CLIENTES SET NOME = :nome, ENDERECO = :endereco, TELEFONE = :telefone WHERE ID = :id",
+            nome=nome, endereco=endereco, telefone=telefone, id=id
+        )
         connection.commit()
-        print("Cliente atualizado com sucesso!")
+        return jsonify({"message": "Cliente atualizado com sucesso!"}), 200
     except cx_Oracle.Error as e:
-        print("Erro ao atualizar o cliente", e)
+        return jsonify({"error": str(e)}), 500
 
-def deletar_cliente():
-    cliente_id = int(input("Digite o ID do cliente que deseja deletar: "))
-
+@app.route('/clientes/<int:id>', methods=['DELETE'])
+def deletar_cliente(id):
     try:
         cursor = connection.cursor()
-        cursor.execute("DELETE FROM CLIENTES WHERE ID = :id", id=cliente_id)
+        cursor.execute("DELETE FROM CLIENTES WHERE ID = :id", id=id)
         connection.commit()
-        print("Cliente deletado com sucesso!")
+        return jsonify({"message": "Cliente deletado com sucesso!"}), 200
     except cx_Oracle.Error as e:
-        print("Erro ao deletar o cliente", e)
+        return jsonify({"error": str(e)}), 500
 
-def menu():
-    while True:
-        print("\n=== MENU DE CLIENTES ===")
-        print("1. Criar cliente")
-        print("2. Ler clientes")
-        print("3. Atualizar cliente")
-        print("4. Deletar cliente")
-        print("5. Sair")
-
-        opcao = input("Escolha uma opção: ")
-
-        if opcao == '1':
-            criar_cliente()
-        elif opcao == '2':
-            ler_clientes()
-        elif opcao == '3':
-            atualizar_cliente()
-        elif opcao == '4':
-            deletar_cliente()
-        elif opcao == '5':
-            break
-        else:
-            print("Opção inválida. Por favor, escolha novamente.")
-
-if __name__ == "__main__":
-    menu()
-    connection.close()
+if __name__ == '__main__':
+    app.run(debug=True)
