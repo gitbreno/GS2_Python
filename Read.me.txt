@@ -1,0 +1,18 @@
+Integrantes:
+Nome: Breno Gustavo dos Santos RM: 557509 Turma: 1TDSPF
+Nome: Vitor Kenzo Mizumoto RM: 557245 Turma: 1TDSPF
+Nome: Allan Baeza RM: 556771 Turma: 1TDSPF
+
+Link do Video: https://youtu.be/ha_WNRZuSzg
+
+Especificação da proposta do projeto:
+
+O projeto RescueEnergy foca em promover sustentabilidade por meio da captura de energia cinética gerada pelo movimento humano, como caminhadas e pedaladas, transformando-a em energia elétrica limpa. No contexto deste projeto, foi desenvolvido um sistema em Python para o gerenciamento de clientes, permitindo o registro de novos clientes que possam se interessar pela solução proposta pela RescueEnergy, como academias, áreas urbanas movimentadas, empresas, condomínios e instituições públicas.
+
+O sistema de cadastro de clientes permite adicionar, visualizar, atualizar e deletar registros de clientes, utilizando um banco de dados Oracle. Com funcionalidades intuitivas e uma interface baseada em um menu simples, os usuários podem facilmente gerenciar o banco de dados de clientes e manter a relação de contatos atualizada, favorecendo a expansão do projeto e a integração das tecnologias da RescueEnergy em diversos locais.
+
+O código desenvolvido utiliza a biblioteca cx_Oracle para conectar ao banco de dados Oracle, o que garante segurança e eficiência na manipulação dos dados. Essa integração é essencial para manter um controle centralizado e organizado dos clientes que se engajam na adoção de práticas sustentáveis e inovadoras de geração de energia limpa.
+
+Este projeto visa não apenas o cadastro de clientes, mas também incentivar a implementação das soluções da RescueEnergy, contribuindo para a transição energética e um futuro mais sustentável.
+
+
